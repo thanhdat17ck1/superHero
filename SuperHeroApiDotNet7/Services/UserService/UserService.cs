@@ -1,4 +1,7 @@
-﻿namespace SuperHeroApiDotNet7.Services.UserService
+﻿using Microsoft.EntityFrameworkCore;
+using SuperHeroApiDotNet7.Models;
+
+namespace SuperHeroApiDotNet7.Services.UserService
 {
     public class UserService : IUserService
     {
@@ -9,11 +12,29 @@
             _context = context;
         }
 
-        public async Task<List<User>> Register(User user)
+        public Task<List<User>> Register(User user)
         {
-            _context.User.Add(user);
-            await _context.SaveChangesAsync();
-            return await _context.User.ToListAsync();
+            var Post =   _context.User.FromSqlRaw("sp_user {0}, {1}, {2}", "Post", user.UserName, user.PasswordHash).ToListAsync();
+            return Post;
         }
+
+        public async Task<string> GetUserByUsername(string userName)
+        {
+            var users = await _context.User
+            .FromSqlRaw("sp_user {0}, {1}, {2}", "GetUserByUsername", userName, "aa")
+            .ToListAsync();
+
+            var user = users.FirstOrDefault();
+
+            if (user != null)
+            {
+                return user.PasswordHash;
+            }
+
+            // Trả về giá trị mặc định nếu không tìm thấy người dùng
+            return "null";
+        }
+
+
     }
 }

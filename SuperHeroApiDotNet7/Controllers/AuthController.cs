@@ -22,41 +22,55 @@ namespace SuperHeroApiDotNet7.Controllers
             _userService = userService;
         }
 
-        [HttpPost("register")]
-        public ActionResult<User> Register(UserDto request)
-        {
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-            user.UserName = request.UserName;
-            user.PasswordHash = passwordHash;
-            _userService.Register(user);
-            return Ok(user);
-        }
-
         //[HttpPost("register")]
-        //public async Task<List<User>> Register(UserDto request)
+        //public ActionResult<User> Register(UserDto request)
         //{
         //    string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
         //    user.UserName = request.UserName;
         //    user.PasswordHash = passwordHash;
-        //    var result = await _userService.Register(user);
+        //    _userService.Register(user);
         //    return Ok(user);
         //}
 
-        [HttpPost("login")]
-        public ActionResult<User> Login(UserDto request)
+        [HttpPost("register")]
+        public async Task<ActionResult<List<User>>> Register(UserDto request)
         {
-            if (user.UserName != request.UserName)
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            user.UserName = request.UserName;
+            user.PasswordHash = passwordHash;
+            var result = await _userService.Register(user);
+            return Ok(user);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<User>> Login(UserDto request)
+        {
+            var _pw = await _userService.GetUserByUsername(request.UserName);
+            if (_pw == null)
             {
                 return BadRequest("User not found");
             }
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, _pw.Trim()))
             {
                 return BadRequest("wrong password.");
             }
             string token = CreateToken(user);
             return Ok(token);
         }
-
+        //[HttpPost("login")]
+        //public ActionResult<User> Login(UserDto request)
+        //{
+        //    if (user.UserName != request.UserName)
+        //    {
+        //        return BadRequest("User not found");
+        //    }
+        //    if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        //    {
+        //        return BadRequest("wrong password.");
+        //    }
+        //    string token = CreateToken(user);
+        //    return Ok(token);
+        //}
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
