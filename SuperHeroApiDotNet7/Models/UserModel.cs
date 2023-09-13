@@ -1,21 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SuperHeroApiDotNet7.Entity.User;
-using SuperHeroApiDotNet7.Models;
+﻿using SuperHeroApiDotNet7.Entity.User;
 
-namespace SuperHeroApiDotNet7.Services.UserService
+namespace SuperHeroApiDotNet7.Models
 {
-    public class UserService : IUserService
+    public class UserModel
     {
         private readonly DataContext _context;
-
-        public UserService(DataContext context)
+        public UserModel(DataContext context)
         {
             _context = context;
         }
 
         public Task<List<UserEntity>> Register(User user)
         {
-            var Post =   _context.User.FromSqlRaw("sp_user {0}, {1}, {2}", "Post", user.UserName, user.PasswordHash).ToListAsync();
+            var Post = _context.User.FromSqlRaw("sp_user {0}, {1}, {2}", "Post", user.UserName, user.PasswordHash).ToListAsync();
             return Post;
         }
 
@@ -35,7 +32,5 @@ namespace SuperHeroApiDotNet7.Services.UserService
             // Trả về giá trị mặc định nếu không tìm thấy người dùng
             return "null";
         }
-
-
     }
 }

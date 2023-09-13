@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SuperHeroApiDotNet7.Repository;
 using SuperHeroApiDotNet7.Services.UserService;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,11 +16,12 @@ namespace SuperHeroApiDotNet7.Controllers
     {
         public static User user = new User();
         private readonly IConfiguration _configuration;
-        private readonly IUserService _userService;
-        public AuthController(IConfiguration configuration, IUserService userService)
+        //private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
+        public AuthController(IConfiguration configuration, IUserRepository userRepository)
         {
             _configuration = configuration;
-            _userService = userService;
+            _userRepository = userRepository;
         }
 
         //[HttpPost("register")]
@@ -38,14 +40,14 @@ namespace SuperHeroApiDotNet7.Controllers
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.UserName = request.UserName;
             user.PasswordHash = passwordHash;
-            var result = await _userService.Register(user);
+            var result = await _userRepository.Register(user);
             return Ok(user);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(UserDto request)
         {
-            var _pw = await _userService.GetUserByUsername(request.UserName);
+            var _pw = await _userRepository.GetUserByUsername(request.UserName);
             if (_pw == null)
             {
                 return BadRequest("User not found");

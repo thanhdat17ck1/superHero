@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SuperHeroApiDotNet7.Services.UserService;
+using SuperHeroApiDotNet7.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +39,8 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 builder.Services.AddScoped<ISuperHeroService, SuperHeroService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserModel>();
 builder.Services.AddDbContext<DataContext>();
 
 var app = builder.Build();

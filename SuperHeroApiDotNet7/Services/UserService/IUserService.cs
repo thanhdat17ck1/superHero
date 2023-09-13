@@ -1,8 +1,10 @@
-﻿namespace SuperHeroApiDotNet7.Services.UserService
+﻿using SuperHeroApiDotNet7.Entity.User;
+
+namespace SuperHeroApiDotNet7.Services.UserService
 {
     public interface IUserService
     {
-        Task<List<User>> Register(User user);
+        Task<List<UserEntity>> Register(User user);
         Task<string> GetUserByUsername(string username);
     }
 }
