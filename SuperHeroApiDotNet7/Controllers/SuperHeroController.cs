@@ -16,7 +16,7 @@ namespace SuperHeroApiDotNet7.Controllers
             _superHeroService = superHeroService;
         }
 
-        //[HttpGet, Authorize(Roles = "Admin, User")]
+        //[HttpGet]
         [HttpGet, Authorize(Roles = "Admin, User")]
         public async Task<ActionResult<List<SuperHero>>> GetAllHeroes()
         {

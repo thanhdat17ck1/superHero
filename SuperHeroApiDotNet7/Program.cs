@@ -1,4 +1,4 @@
-global using SuperHeroApiDotNet7.Models;
+﻿global using SuperHeroApiDotNet7.Models;
 global using SuperHeroApiDotNet7.Data;
 using SuperHeroApiDotNet7.Services.SuperHeroService;
 using Microsoft.OpenApi.Models;
@@ -42,6 +42,16 @@ builder.Services.AddScoped<ISuperHeroService, SuperHeroService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserModel>();
 builder.Services.AddDbContext<DataContext>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowHTTP", builder =>
+    {
+        builder
+            .WithOrigins("*") // Thay đổi thành URL của Next.js của bạn
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -50,6 +60,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowHTTP");
+}
+if (app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseCors("AllowHTTP");
 }
 
 app.UseHttpsRedirection();
@@ -61,3 +78,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
