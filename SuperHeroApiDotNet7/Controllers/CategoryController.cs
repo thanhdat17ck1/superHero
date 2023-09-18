@@ -19,7 +19,7 @@ namespace SuperHeroApiDotNet7.Controllers
         [HttpPost("SaveCategory")]
         public ActionResult SaveCategory(CategoryEntity request)
         {           
-            CategoryModel model =  new CategoryModel(_context);
+            CategoryModel model = new CategoryModel(_context);
             var result = model.PostCategory(request);
             return Ok(200);
         }
